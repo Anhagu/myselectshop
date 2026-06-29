@@ -3,11 +3,13 @@ package com.anhagu.myselectshop.controller;
 import com.anhagu.myselectshop.dto.SignupRequestDto;
 import com.anhagu.myselectshop.dto.UserInfoDto;
 import com.anhagu.myselectshop.entity.UserRoleEnum;
+import com.anhagu.myselectshop.jwt.JwtUtil;
 import com.anhagu.myselectshop.security.UserDetailsImpl;
 import com.anhagu.myselectshop.service.FolderService;
 import com.anhagu.myselectshop.service.KakaoService;
 import com.anhagu.myselectshop.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -78,6 +80,10 @@ public class UserController {
     @GetMapping("/user/kakao/callback")
     public String kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
         String token = kakaoService.kakaoLogin(code);
+
+        Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, token.substring(7));
+        cookie.setPath("/");
+        response.addCookie(cookie);
 
         return "redirect:/";
     }
